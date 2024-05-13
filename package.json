@@ -1,0 +1,34 @@
+{
+	"name": "pixiv-js",
+	"version": "1.0.0",
+	"description": "JavaScript wrapper for pixiv",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc"
+	},
+	"files": [
+		"dist/**/*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/FireStreaker2/pixiv-js.git"
+	},
+	"keywords": [
+		"pixiv",
+		"api"
+	],
+	"author": "FireStreaker2",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/FireStreaker2/pixiv-js/issues"
+	},
+	"homepage": "https://github.com/FireStreaker2/pixiv-js#readme",
+	"dependencies": {
+		"node-fetch": "^3.3.2"
+	},
+	"devDependencies": {
+		"@types/node": "^20.14.10",
+		"typescript": "^5.5.3"
+	}
+}
