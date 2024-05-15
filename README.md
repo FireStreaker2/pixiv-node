@@ -20,10 +20,11 @@ $ npm i pixiv-node
 |-------------|-----------------------------------------------------------------|
 | get         | A private utility method used in all other methods              |
 | getComments | Get all the comments of a specific post                         |
+| getImages   | Get all the images associated with a post                       |
 | getPost     | Get the data of a specific post                                 |
 | search      | Search for a specific query with additional optional parameters |
 
-# Examples
+# Example
 ```ts
 import Pixiv from "pixiv-node";
 
@@ -33,6 +34,9 @@ import Pixiv from "pixiv-node";
 
 	// get all the data of a specific post
 	console.log(JSON.stringify(await Pixiv.getPost(119640517)));
+
+  // get all images of a specific post
+  console.log(JSON.stringify(await Pixiv.getImages(119640517)));
 
 	// search for all nsfw artwork with the query "gawr gura" using descending order (oldest) and allowing ai artwork
 	console.log(
@@ -47,6 +51,14 @@ import Pixiv from "pixiv-node";
 		)
 	);
 })();
+```
+
+# Development
+```bash
+$ git clone https://github.com/FireStreaker2/pixiv-node.git
+$ cd pixiv-node
+$ npm i  
+$ npm run build
 ```
 
 # License

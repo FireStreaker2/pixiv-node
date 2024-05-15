@@ -17,6 +17,10 @@ class Pixiv {
 		);
 	}
 
+	static async getImages(id: string | number) {
+		return await this.get(`https://www.pixiv.net/ajax/illust/${id}/pages`);
+	}
+
 	static async getPost(id: string | number) {
 		return await this.get(`https://www.pixiv.net/ajax/illust/${id}`);
 	}
