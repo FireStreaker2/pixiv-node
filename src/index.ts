@@ -35,7 +35,15 @@ class Pixiv {
 		ai?: 0 | 1;
 	}) {
 		return await this.get(
-			`https://www.pixiv.net/ajax/search/artworks/${query}?word=${query}&order=${order}&mode=${mode}&type=${type}&ai_type=${ai}`
+			`https://www.pixiv.net/ajax/search/artworks/${query}?${new URLSearchParams(
+				{
+					word: query,
+					...(order && { order }),
+					...(mode && { mode }),
+					...(type && { type }),
+					...(ai !== undefined && { ai_type: ai.toString() }),
+				}
+			).toString()}`
 		);
 	}
 }
