@@ -1,12 +1,13 @@
 {
 	"name": "pixiv-node",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "JavaScript wrapper for pixiv",
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc && npm run minify",
+		"minify": "terser dist/index.js --compress --mangle --output dist/index.js"
 	},
 	"files": [
 		"dist/**/*"
@@ -24,12 +25,13 @@
 	"bugs": {
 		"url": "https://github.com/FireStreaker2/pixiv-node/issues"
 	},
-	"homepage": "https://github.com/FireStreaker2/pixiv-node#readme",
-	"dependencies": {
-		"node-fetch": "^3.3.2"
+	"engines": {
+		"node": ">=18.0.0"
 	},
+	"homepage": "https://github.com/FireStreaker2/pixiv-node#readme",
 	"devDependencies": {
 		"@types/node": "^20.14.10",
+		"terser": "^5.31.2",
 		"typescript": "^5.5.3"
 	}
 }

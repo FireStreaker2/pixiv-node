@@ -23,15 +23,62 @@ $ npm i pixiv-node
 
 ## Methods
 
-| Method      | Description                                                     | Authentication |
-| ----------- | --------------------------------------------------------------- | -------------- |
-| get         | A private utility method used in all other methods              | N/A            |
-| getComments | Get all the comments of a specific post                         | No             |
-| getImages   | Get all the images associated with a post                       | If NSFW        |
-| getPost     | Get the data of a specific post                                 | No             |
-| getUser     | Get info asociated with a specific user id                      | If bookmarks   |
-| login       | Store your cookie in memory for authentication                  | N/A            |
-| search      | Search for a specific query with additional optional parameters | If using `r18` |
+| Method            | Description                                                     | Authentication  |
+| ----------------- | --------------------------------------------------------------- | --------------- |
+| get               | A private utility method used in all other methods              | N/A             |
+| getIllustComments | Get all the comments of a specific illustration/manga           | No              |
+| getImages         | Get all the images associated with a post                       | If NSFW         |
+| getNovel          | Get all the data associated with a novel                        | If NSFW         |
+| getNovelComments  | Get all the comments of a specific novel                        | If NSFW         |
+| getNovelSeries    | Get all novels inside of a series                               | If NSFW (title) |
+| getPost           | Get the data of a specific post                                 | No              |
+| getUser           | Get info asociated with a specific user id                      | If bookmarks    |
+| login             | Store your cookie in memory for authentication                  | N/A             |
+| search            | Search for a specific query with additional optional parameters | If using `r18`  |
+
+### Method parameters
+
+```ts
+// dist/index.d.ts
+
+type NumericString = string | number;
+export default class Pixiv {
+	private static token;
+	private static get;
+	static getIllustComments(
+		id: NumericString,
+		limit?: NumericString
+	): Promise<Object>;
+	static getImages(id: NumericString): Promise<Object>;
+	static getNovel(id: NumericString): Promise<Object>;
+	static getNovelSeries(id: NumericString): Promise<Object>;
+	static getNovelComments(
+		id: NumericString,
+		limit?: NumericString
+	): Promise<Object>;
+	static getPost(id: NumericString): Promise<Object>;
+	static getUser(
+		id: NumericString,
+		option: "all" | "top" | "bookmarks/illusts" | "bookmarks/novels",
+		limit?: NumericString
+	): Promise<Object>;
+	static login(token: string): typeof Pixiv;
+	static search({
+		query,
+		order,
+		mode,
+		type,
+		ai,
+	}: {
+		query: string;
+		order?: "date" | "date_d";
+		mode?: "all" | "safe" | "r18";
+		type?: "all" | "illust_and_ugoira" | "manga";
+		ai?: 0 | 1;
+	}): Promise<Object>;
+}
+export {};
+```
 
 ## Authentication
 
@@ -65,7 +112,12 @@ import Pixiv from "pixiv-node";
 	// get all images of a specific post
 	console.log(JSON.stringify(await Pixiv.getImages(119640517)));
 
-	// login with browser cookie, then search for all nsfw artwork with the query "gawr gura" using descending order (oldest) and allowing ai artwork
+	// get a specific novel
+	console.log(JSON.stringify(await Pixiv.getNovel(17814676)));
+
+	// login with browser cookie, then search for all nsfw artwork
+	// with the query "gawr gura" using descending order (oldest)
+	// and allowing ai artwork
 	console.log(
 		JSON.stringify(
 			await Pixiv.login(process.env.TOKEN).search({

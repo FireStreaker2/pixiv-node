@@ -1,9 +1,12 @@
-import fetch from "node-fetch";
+type NumericString = string | number;
 
-class Pixiv {
+export default class Pixiv {
 	private static token: string;
 
-	private static async get(url: string): Promise<Object> {
+	private static async get(
+		url: string,
+		type: "json" | "text" = "json"
+	): Promise<Object> {
 		const body: {
 			headers?: {
 				cookie: string;
@@ -13,12 +16,15 @@ class Pixiv {
 
 		const response = await fetch(url, body);
 		if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-		const data = (await response.json()) as Object;
+
+		const data = (
+			type === "json" ? await response.json() : await response.text()
+		) as Object;
 
 		return data;
 	}
 
-	static async getComments(id: string | number, limit?: string | number) {
+	static async getIllustComments(id: NumericString, limit?: NumericString) {
 		return await this.get(
 			`https://www.pixiv.net/ajax/illusts/comments/roots?illust_id=${id}${
 				limit ? `&limit=${limit}` : ""
@@ -26,20 +32,54 @@ class Pixiv {
 		);
 	}
 
-	static async getImages(id: string | number) {
+	static async getImages(id: NumericString) {
 		return await this.get(`https://www.pixiv.net/ajax/illust/${id}/pages`);
 	}
 
-	static async getPost(id: string | number) {
+	static async getNovel(id: NumericString) {
+		const data = (await this.get(
+			`https://www.pixiv.net/novel/show.php?id=${id}`,
+			"text"
+		)) as string;
+
+		const regex =
+			/<meta name="preload-data" id="meta-preload-data" content='.*'>/;
+		const match = regex.exec(data);
+
+		if (match)
+			return JSON.parse(
+				match[0].replace(
+					/<meta name="preload-data" id="meta-preload-data" content='|'>/g,
+					""
+				)
+			) as Object;
+		else throw new Error("Novel data not found!");
+	}
+
+	static async getNovelComments(id: NumericString, limit?: NumericString) {
+		return await this.get(
+			`https://www.pixiv.net/ajax/novels/comments/roots?novel_id=${id}${
+				limit ? `&limit=${limit}` : ""
+			}`
+		);
+	}
+
+	static async getNovelSeries(id: NumericString) {
+		return await this.get(
+			`https://www.pixiv.net/ajax/novel/series/${id}/content_titles`
+		);
+	}
+
+	static async getPost(id: NumericString) {
 		return await this.get(`https://www.pixiv.net/ajax/illust/${id}`);
 	}
 
 	static async getUser(
-		id: string | number,
+		id: NumericString,
 		option: "all" | "top" | "bookmarks/illusts" | "bookmarks/novels",
-		limit?: string | number
+		limit?: NumericString
 	) {
-		if (option.includes("bookmarks") && limit === undefined)
+		if (option.includes("bookmarks") && !limit)
 			throw new Error(`Limit is required for option "${option}"`);
 
 		if (option.includes("bookmarks") && !this.token)
@@ -90,5 +130,3 @@ class Pixiv {
 		);
 	}
 }
-
-export default Pixiv;
