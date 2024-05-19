@@ -1,6 +1,6 @@
 {
 	"name": "pixiv-node",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "JavaScript wrapper for pixiv",
 	"type": "module",
 	"main": "dist/index.js",
