@@ -1,3 +1,5 @@
+import fetch from "node-fetch";
+
 type NumericString = string | number;
 
 export default class Pixiv {
@@ -9,16 +11,10 @@ export default class Pixiv {
 	): Promise<Object> {
 		const body: {
 			headers?: {
-				cookie?: string;
-				"sec-ch-ua": string;
+				cookie: string;
 			};
-		} = {
-			headers: {
-				"sec-ch-ua":
-					'"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-			},
-		};
-		if (this.token) body.headers!.cookie = this.token;
+		} = {};
+		if (this.token) body.headers = { cookie: this.token };
 
 		const response = await fetch(url, body);
 		if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
