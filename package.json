@@ -1,6 +1,6 @@
 {
 	"name": "pixiv-node",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "JavaScript wrapper for pixiv",
 	"type": "module",
 	"main": "dist/index.js",
@@ -18,7 +18,10 @@
 	},
 	"keywords": [
 		"pixiv",
-		"api"
+		"api",
+		"wrapper",
+		"library",
+		"unofficial"
 	],
 	"author": "FireStreaker2",
 	"license": "MIT",

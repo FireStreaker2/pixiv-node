@@ -4,14 +4,15 @@
 
 # About
 
-pixiv-node is a simple JavaScript wrapper for [pixiv](https://www.pixiv.net/), which sends requests to their backend API.
+pixiv-node is a simple JavaScript wrapper for [Pixiv](https://www.pixiv.net/), which sends requests to their backend API.
 
 # Features
 
 - Fully asynchronous
 - Provides support for most read-only actions
-- Doesn't require authentication for SFW works
+- Doesn't require authentication for SFW content
 - Provides a way of authenticating for features locked behind accounts
+- Built with TypeScript for improved IDE support
 
 # Installation
 
@@ -23,18 +24,20 @@ $ npm i pixiv-node
 
 ## Methods
 
-| Method            | Description                                                     | Authentication  |
-| ----------------- | --------------------------------------------------------------- | --------------- |
-| get               | A private utility method used in all other methods              | N/A             |
-| getIllustComments | Get all the comments of a specific illustration/manga           | No              |
-| getImages         | Get all the images associated with a post                       | If NSFW         |
-| getNovel          | Get all the data associated with a novel                        | If NSFW         |
-| getNovelComments  | Get all the comments of a specific novel                        | If NSFW         |
-| getNovelSeries    | Get all novels inside of a series                               | If NSFW (title) |
-| getPost           | Get the data of a specific post                                 | No              |
-| getUser           | Get info asociated with a specific user id                      | If bookmarks    |
-| login             | Store your cookie in memory for authentication                  | N/A             |
-| search            | Search for a specific query with additional optional parameters | If using `r18`  |
+| Method            | Description                                                     | Authentication     |
+| ----------------- | --------------------------------------------------------------- | ------------------ |
+| get               | A private utility method used in all other methods              | N/A                |
+| getIllust         | Get the data of an illustration/manga                           | No                 |
+| getIllustComments | Get all the comments of a specific illustration/manga           | No                 |
+| getIllustImage    | Get all the images associated with a illustration/manga         | If NSFW            |
+| getNovel          | Get all the data associated with a novel                        | If NSFW            |
+| getNovelComments  | Get all the comments of a specific novel                        | If NSFW            |
+| getNovelSeries    | Get all novels inside of a series                               | If NSFW            |
+| getUser           | Get info asociated with a specific user id                      | If using bookmarks |
+| login             | Store your cookie in memory for authentication                  | N/A                |
+| search            | Search for a specific query with additional optional parameters | If using `r18`     |
+
+> Pixiv groups illustrations and manga together, which is why some of the methods aren't called `getIllustMangaX`
 
 ### Method parameters
 
@@ -45,18 +48,18 @@ type NumericString = string | number;
 export default class Pixiv {
 	private static token;
 	private static get;
+	static getIllust(id: NumericString): Promise<Object>;
 	static getIllustComments(
 		id: NumericString,
 		limit?: NumericString
 	): Promise<Object>;
-	static getImages(id: NumericString): Promise<Object>;
+	static getIllustImages(id: NumericString): Promise<Object>;
 	static getNovel(id: NumericString): Promise<Object>;
-	static getNovelSeries(id: NumericString): Promise<Object>;
 	static getNovelComments(
 		id: NumericString,
 		limit?: NumericString
 	): Promise<Object>;
-	static getPost(id: NumericString): Promise<Object>;
+	static getNovelSeries(id: NumericString): Promise<Object>;
 	static getUser(
 		id: NumericString,
 		option: "all" | "top" | "bookmarks/illusts" | "bookmarks/novels",
@@ -73,7 +76,7 @@ export default class Pixiv {
 		query: string;
 		order?: "date" | "date_d";
 		mode?: "all" | "safe" | "r18";
-		type?: "all" | "illust_and_ugoira" | "manga";
+		type?: "top" | "illust_and_ugoira" | "manga" | "artworks" | "novels";
 		ai?: 0 | 1;
 	}): Promise<Object>;
 }
@@ -103,32 +106,29 @@ In order to access this, you can follow these steps:
 import Pixiv from "pixiv-node";
 
 (async () => {
-	// get 3 comments of a specific post
-	console.log(JSON.stringify(await Pixiv.getComments(119640517, 3)));
+	// get 3 comments of a specific illustration or manga
+	const comments = await Pixiv.getIllustComments(119640517, 3);
 
-	// get all the data of a specific post
-	console.log(JSON.stringify(await Pixiv.getPost(119640517)));
+	// get all the data of a specific illustration or manga
+	const illust = await Pixiv.getIllust(119640517);
 
-	// get all images of a specific post
-	console.log(JSON.stringify(await Pixiv.getImages(119640517)));
+	// get all images of a specific illustration or manga
+	const images = await Pixiv.getIllustImages(119640517);
 
 	// get a specific novel
-	console.log(JSON.stringify(await Pixiv.getNovel(17814676)));
+	const novel = await Pixiv.getNovel(17814676);
 
+	// advanced usage:
 	// login with browser cookie, then search for all nsfw artwork
 	// with the query "gawr gura" using descending order (oldest)
 	// and allowing ai artwork
-	console.log(
-		JSON.stringify(
-			await Pixiv.login(process.env.TOKEN).search({
-				query: "gawr gura",
-				order: "date_d",
-				mode: "r18",
-				type: "all",
-				ai: 1,
-			})
-		)
-	);
+	const search = await Pixiv.login(process.env.TOKEN).search({
+		query: "gawr gura",
+		order: "date_d",
+		mode: "r18",
+		type: "illust_and_ugoira",
+		ai: 1,
+	});
 })();
 ```
 
@@ -141,6 +141,7 @@ $ git clone https://github.com/FireStreaker2/pixiv-node.git
 $ cd pixiv-node
 $ npm i
 $ npm run build
+$ ./dist/index.js
 ```
 
 # License

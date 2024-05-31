@@ -32,6 +32,10 @@ export default class Pixiv {
 		return data;
 	}
 
+	static async getIllust(id: NumericString) {
+		return await this.get(`https://www.pixiv.net/ajax/illust/${id}`);
+	}
+
 	static async getIllustComments(id: NumericString, limit?: NumericString) {
 		return await this.get(
 			`https://www.pixiv.net/ajax/illusts/comments/roots?illust_id=${id}${
@@ -40,7 +44,7 @@ export default class Pixiv {
 		);
 	}
 
-	static async getImages(id: NumericString) {
+	static async getIllustImages(id: NumericString) {
 		return await this.get(`https://www.pixiv.net/ajax/illust/${id}/pages`);
 	}
 
@@ -76,10 +80,6 @@ export default class Pixiv {
 		return await this.get(
 			`https://www.pixiv.net/ajax/novel/series/${id}/content_titles`
 		);
-	}
-
-	static async getPost(id: NumericString) {
-		return await this.get(`https://www.pixiv.net/ajax/illust/${id}`);
 	}
 
 	static async getUser(
@@ -119,22 +119,22 @@ export default class Pixiv {
 		query: string;
 		order?: "date" | "date_d";
 		mode?: "all" | "safe" | "r18";
-		type?: "all" | "illust_and_ugoira" | "manga";
+		type?: "top" | "illust_and_ugoira" | "manga" | "artworks" | "novels";
 		ai?: 0 | 1;
 	}) {
 		if (mode == "r18" && !this.token)
 			throw new Error("You must be authenticated to see NSFW content!");
 
 		return await this.get(
-			`https://www.pixiv.net/ajax/search/artworks/${query}?${new URLSearchParams(
-				{
-					word: query,
-					...(order && { order }),
-					...(mode && { mode }),
-					...(type && { type }),
-					...(ai !== undefined && { ai_type: ai.toString() }),
-				}
-			).toString()}`
+			`https://www.pixiv.net/ajax/search/${
+				type === "illust_and_ugoira" ? "illustrations" : type
+			}/${query}?${new URLSearchParams({
+				word: query,
+				...(order && { order }),
+				...(mode && { mode }),
+				...(type && { type }),
+				...(ai !== undefined && { ai_type: ai.toString() }),
+			}).toString()}`
 		);
 	}
 }
